@@ -14,9 +14,9 @@ class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
             view.navigationController?.popViewController(animated: true)
         }
     }
-    static func createArticleDetailModule()->UIViewController? {
-        if let loginVC = mainStoryboard.instantiateViewController(withIdentifier: "ArticleDetailView") as? ArticleDetailView {
-        let presenter = ArticleDetailPresenter()
+    static func createArticleDetailModule(_ article: Results)->UIViewController? {
+        if let articleDetail = mainStoryboard.instantiateViewController(withIdentifier: "ArticleDetailView") as? ArticleDetailView {
+        let presenter = ArticleDetailPresenter(article)
         let interactor = ArticleDetailInteractor()
         let wireFrame = ArticleDetailWireFrame()
         let dataManager = ArticleDetailDataManager()
@@ -26,9 +26,10 @@ class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
         interactor.dataManager = dataManager
         presenter.interactor = interactor
         presenter.wireFrame = wireFrame
-        presenter.view = loginVC
-        loginVC.presenter = presenter
-            return loginVC
+        presenter.view = articleDetail
+        articleDetail.presenter = presenter
+        return articleDetail
+        
         }
         return nil
     }

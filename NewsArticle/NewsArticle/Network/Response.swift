@@ -8,9 +8,35 @@
 
 import Foundation
 
-public enum NetworkErrors: Error {
+enum Result<T> {
+    case success(data: T)
+    case failure(error: Error)
+}
+
+enum NetworkErrors: Error, LocalizedError {
+    case parseUrlFail
+    case notFound
+    case validationError
+    case serverError
+    case defaultError
     case badInput
-    case noData
+
+    var errorDescription: String? {
+        switch self {
+        case .parseUrlFail:
+            return "Cannot initial URL object."
+        case .notFound:
+            return "Not Found"
+        case .validationError:
+            return "Validation Errors"
+        case .serverError:
+            return "Internal Server Error"
+        case .defaultError:
+            return "Something went wrong."
+        case .badInput:
+            return "Bad Input."
+        }
+    }
 }
 
 public enum Response {
@@ -25,7 +51,7 @@ public enum Response {
         }
         
         guard let data = response.d else {
-            self = .error(response.r?.statusCode, NetworkErrors.noData)
+            self = .error(response.r?.statusCode, NetworkErrors.serverError)
             return
         }
         

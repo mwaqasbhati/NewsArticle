@@ -9,9 +9,7 @@ import PKHUD
 
 class ArticleListView: UIViewController {
     
-    @IBOutlet weak var textFieldEmail: UITextField!
-    @IBOutlet weak var textFieldPassword: UITextField!
-    @IBOutlet weak var buttonArticleListWithGoogle: UIButton!
+    @IBOutlet weak var tableView: UITableView!
     
     var presenter: ArticleListPresenterProtocol?
     var articles: ArticleListBase?
@@ -48,6 +46,7 @@ extension ArticleListView: ArticleListViewProtocol {
         self.articles = articles
         DispatchQueue.main.async { [weak self] in
             guard let `self` = self else { return }
+            self.tableView.reloadData()
         }
     }
     
@@ -71,3 +70,28 @@ extension ArticleListView: ArticleListViewProtocol {
     
 }
 
+extension ArticleListView: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return articles?.results?.count ?? 0
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArticleListTableViewCell.cellId) as? ArticleListTableViewCell else {
+            return UITableViewCell()
+        }
+        if let article = articles?.results?[indexPath.row] {
+            cell.setArticle(article)
+        }
+        return cell
+    }
+    
+}
+
+extension ArticleListView: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let article = articles?.results?[indexPath.row] {
+            presenter?.moveToDetailView(article)
+        }
+    }
+    
+}

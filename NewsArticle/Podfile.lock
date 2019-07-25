@@ -1,16 +1,22 @@
 PODS:
   - PKHUD (5.2.1)
+  - SDWebImage (5.0.2):
+    - SDWebImage/Core (= 5.0.2)
+  - SDWebImage/Core (5.0.2)
 
 DEPENDENCIES:
   - PKHUD (~> 5.0)
+  - SDWebImage
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - PKHUD
+    - SDWebImage
 
 SPEC CHECKSUMS:
   PKHUD: 4e6162c4c39ac367c6934e9855c6b4762ee16256
+  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
 
-PODFILE CHECKSUM: 56dea02a579248708c78d9df21186ed0b6da1e3e
+PODFILE CHECKSUM: 90125ee5b40b855e29fb1011974fc03814319a28
 
 COCOAPODS: 1.6.1

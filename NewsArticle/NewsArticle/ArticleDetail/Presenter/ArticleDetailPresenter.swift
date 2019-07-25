@@ -6,35 +6,27 @@
 
 
 class ArticleDetailPresenter: ArticleDetailPresenterProtocol {
+    
+    var article: Results
+    
     weak var view: ArticleDetailViewProtocol?
     var interactor: ArticleDetailInteractorInputProtocol?
     var wireFrame: ArticleDetailWireFrameProtocol?
     
-    func loginWithUserName(_ name: String, password: String) {
-        view?.showLoading()
-        interactor?.loginWithUserName(name, password: password)
+    init(_ article: Results) {
+        self.article = article
     }
+//    func showArticleDetail() {
+//        view?.showLoading()
+//        view?.showArticleDetail(article)
+//    }
     func goBack() {
         wireFrame?.goBack(from: view!)
-    }
-    func moveToSignupView() {
-        wireFrame?.presentSignupScreen(from: view!)
-    }
-    func moveToHomeView() {
-         wireFrame?.presentHomeScreen(from: view!)
     }
 }
 
 extension ArticleDetailPresenter: ArticleDetailInteractorOutputProtocol {
     
-    func didArticleDetailSuccess() {
-        view?.hideLoading()
-        view?.showLoggedIn()
-    }
-    func onError(_ error: Error) {
-        view?.hideLoading()
-        view?.showError(error.localizedDescription)
-    }
     
 }
 

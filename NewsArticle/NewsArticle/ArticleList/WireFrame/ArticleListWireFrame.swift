@@ -24,13 +24,16 @@ class ArticleListWireFrame: ArticleListWireFrameProtocol {
         presenter.view = rootViewController
         rootViewController.presenter = presenter
         let navController = UINavigationController(rootViewController: rootViewController)
-        navController.isNavigationBarHidden = true
-            return navController
+       // navController.isNavigationBarHidden = true
+        return navController
         }
         return nil
     }
-    func presentArticleDetail(from view: ArticleListViewProtocol) {
+    func presentArticleDetail(from view: ArticleListViewProtocol, article: Results) {
         
+        if let view = view as? UIViewController, let controller = ArticleDetailWireFrame.createArticleDetailModule(article) {
+            view.navigationController?.pushViewController(controller, animated: true)
+        }
     }
     static var mainStoryboard: UIStoryboard {
         return UIStoryboard(name: "Main", bundle: Bundle.main)

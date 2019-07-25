@@ -18,9 +18,9 @@ class ArticleListPresenter: ArticleListPresenterProtocol {
         view?.showLoading()
         interactor?.loadArticles(section: section, timePeriod: timePeriod, offset: offset)
     }
-    func moveToDetailView() {
+    func moveToDetailView(_ article: Results) {
         if let view = view {
-            wireFrame?.presentArticleDetail(from: view)
+            wireFrame?.presentArticleDetail(from: view, article: article)
         }
     }
 }
