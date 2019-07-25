@@ -8,11 +8,6 @@
 
 import Foundation
 
-enum NetworkError: Error {
-    case success
-    case error(String)
-}
-
 struct ResponseError: Decodable {
     let message: String
     let code: Int

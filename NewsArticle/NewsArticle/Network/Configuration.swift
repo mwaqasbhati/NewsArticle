@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ConfigurationManager {
+class Configuration {
     
     static let scheme = "https://"
     static let host = "api.nytimes.com"
