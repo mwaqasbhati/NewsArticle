@@ -10,19 +10,10 @@ import UIKit
 protocol ArticleDetailViewProtocol: class {
     var presenter: ArticleDetailPresenterProtocol? { get set }
     
-    // PRESENTER -> VIEW
-    
-    func showArticleDetail(_ article: Results)
-    
-    func showError(_ message: String)
-    
-    func showLoading()
-    
-    func hideLoading()
+    // PRESENTER -> VIEW        
 }
 
 protocol ArticleDetailWireFrameProtocol: class {
-   // static func createArticleDetailModule() -> UIViewController
     // PRESENTER -> WIREFRAME
     func goBack(from view: ArticleDetailViewProtocol)
 }
@@ -31,9 +22,8 @@ protocol ArticleDetailPresenterProtocol: class {
     var view: ArticleDetailViewProtocol? { get set }
     var interactor: ArticleDetailInteractorInputProtocol? { get set }
     var wireFrame: ArticleDetailWireFrameProtocol? { get set }
-    var article: Results {get set}
+    var article: Article {get set}
     // VIEW -> PRESENTER
-   // func showArticleDetail(_ article: Results)
     func goBack()
 }
 

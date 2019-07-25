@@ -6,7 +6,7 @@
 
 import Foundation
 
-struct Results : Decodable {
+struct Article : Decodable {
 	let url : String?
 	let adx_keywords : String?
 	let column : String?

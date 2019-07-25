@@ -8,12 +8,8 @@
 class ArticleDetailInteractor: ArticleDetailInteractorInputProtocol {
     weak var presenter: ArticleDetailInteractorOutputProtocol?
     var dataManager: ArticleDetailDataManagerInputProtocol?
-    
-
-        
 }
 
 extension ArticleDetailInteractor: ArticleDetailDataManagerOutputProtocol {
-    func onError(_ error: Error) {
-    }
+    
 }

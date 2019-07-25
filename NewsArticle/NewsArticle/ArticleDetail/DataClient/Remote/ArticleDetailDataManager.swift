@@ -10,8 +10,4 @@ class ArticleDetailDataManager: ArticleDetailDataManagerInputProtocol {
     
     weak var remoteRequestHandler: ArticleDetailDataManagerOutputProtocol?
     
-    func verifyUser(_ name: String, password: String) {
-        
-        
-    }
 }

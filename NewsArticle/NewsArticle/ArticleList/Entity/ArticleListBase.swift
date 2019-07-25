@@ -10,7 +10,7 @@ struct ArticleListBase : Decodable {
 	let status : String?
 	let copyright : String?
 	let num_results : Int?
-	let results : [Results]?
+	let results : [Article]?
 
 	enum CodingKeys: String, CodingKey {
 
@@ -25,7 +25,7 @@ struct ArticleListBase : Decodable {
 		status = try values.decodeIfPresent(String.self, forKey: .status)
 		copyright = try values.decodeIfPresent(String.self, forKey: .copyright)
 		num_results = try values.decodeIfPresent(Int.self, forKey: .num_results)
-		results = try values.decodeIfPresent([Results].self, forKey: .results)
+		results = try values.decodeIfPresent([Article].self, forKey: .results)
 	}
 
 }

@@ -22,7 +22,7 @@ class ArticleListTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-    func setArticle(_ article: Results) {
+    func setArticle(_ article: Article) {
         labelTitle.text = article.title
         labelDescription.text = article.byline
         labelDate.text = article.published_date

@@ -14,22 +14,21 @@ class ArticleListWireFrame: ArticleListWireFrameProtocol {
         let presenter = ArticleListPresenter()
         let interactor = ArticleListInteractor()
         let wireFrame = ArticleListWireFrame()
-        let dataManager = ArticleListDataManager()
+        let dataClient = ArticleListNetworkClient()
         
-        dataManager.remoteRequestHandler = interactor
+        dataClient.remoteRequestHandler = interactor
         interactor.presenter = presenter
-        interactor.dataManager = dataManager
+        interactor.dataManager = dataClient
         presenter.interactor = interactor
         presenter.wireFrame = wireFrame
         presenter.view = rootViewController
         rootViewController.presenter = presenter
         let navController = UINavigationController(rootViewController: rootViewController)
-       // navController.isNavigationBarHidden = true
         return navController
         }
         return nil
     }
-    func presentArticleDetail(from view: ArticleListViewProtocol, article: Results) {
+    func presentArticleDetail(from view: ArticleListViewProtocol, article: Article) {
         
         if let view = view as? UIViewController, let controller = ArticleDetailWireFrame.createArticleDetailModule(article) {
             view.navigationController?.pushViewController(controller, animated: true)

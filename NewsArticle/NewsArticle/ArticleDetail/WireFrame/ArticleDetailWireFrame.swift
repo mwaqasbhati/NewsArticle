@@ -14,7 +14,7 @@ class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
             view.navigationController?.popViewController(animated: true)
         }
     }
-    static func createArticleDetailModule(_ article: Results)->UIViewController? {
+    static func createArticleDetailModule(_ article: Article)->UIViewController? {
         if let articleDetail = mainStoryboard.instantiateViewController(withIdentifier: "ArticleDetailView") as? ArticleDetailView {
         let presenter = ArticleDetailPresenter(article)
         let interactor = ArticleDetailInteractor()

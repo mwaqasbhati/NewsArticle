@@ -7,13 +7,13 @@
 
 class ArticleDetailPresenter: ArticleDetailPresenterProtocol {
     
-    var article: Results
+    var article: Article
     
     weak var view: ArticleDetailViewProtocol?
     var interactor: ArticleDetailInteractorInputProtocol?
     var wireFrame: ArticleDetailWireFrameProtocol?
     
-    init(_ article: Results) {
+    init(_ article: Article) {
         self.article = article
     }
 //    func showArticleDetail() {

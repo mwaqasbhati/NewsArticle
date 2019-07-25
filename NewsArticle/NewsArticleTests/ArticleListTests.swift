@@ -23,14 +23,11 @@ class ArticleListTests: XCTestCase {
     }
     
     func testArticleListViewInitializing() {
-        
-        
         XCTAssertNotNil(ArticleListWireFrame.createArticleListModule(), "Error Initializing Article List View")
-        
     }
     func testArticleListFetchingService() {
         promise = expectation(description: "Article Listing API Test")
-        let dataManager = ArticleListDataManager()
+        let dataManager = ArticleListNetworkClient()
         dataManager.remoteRequestHandler = self
         dataManager.loadArticles(section: "all-sections", timePeriod: TimePeriod.Week, offset: 20)
         waitForExpectations(timeout: 60.0) { (error) in
@@ -41,7 +38,7 @@ class ArticleListTests: XCTestCase {
     
     func testArticleSectionFetchingService() {
         promise = expectation(description: "Article Sections API Test")
-        let dataManager = ArticleListDataManager()
+        let dataManager = ArticleListNetworkClient()
         dataManager.remoteRequestHandler = self
         dataManager.loadArticleSections()
         waitForExpectations(timeout: 60.0) { (error) in

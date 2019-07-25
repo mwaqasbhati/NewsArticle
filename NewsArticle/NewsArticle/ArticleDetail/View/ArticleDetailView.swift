@@ -14,12 +14,12 @@ class ArticleDetailView: UIViewController {
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var labelByLine: UILabel!
     @IBOutlet weak var labelPublishDate: UILabel!
-    
+    @IBOutlet weak var labelAbstract: UILabel!
+    @IBOutlet weak var labelKeywords: UILabel!
+
     @IBOutlet weak var buttonMoreDetails: UIButton!
     @IBOutlet weak var imageViewPreview: UIImageView!
     
-    @IBOutlet weak var labelAbstract: UILabel!
-    @IBOutlet weak var labelKeywords: UILabel!
     var presenter: ArticleDetailPresenterProtocol?
     
     override func viewDidLoad() {
@@ -28,7 +28,7 @@ class ArticleDetailView: UIViewController {
             setData(article)
         }
     }
-    private func setData(_ article: Results) {
+    private func setData(_ article: Article) {
         labelTitle.text = article.title
         labelSection.text = article.section
         labelByLine.text = article.byline
@@ -57,30 +57,6 @@ class ArticleDetailView: UIViewController {
 
 extension ArticleDetailView: ArticleDetailViewProtocol {
     
-    func showArticleDetail(_ article: Results) {
-        DispatchQueue.main.async { [weak self] in
-            guard let `self` = self else { return }
-            
-        }
-    }
-    
-    func showError(_ message: String) {
-        DispatchQueue.main.async {
-            HUD.flash(.label(message), delay: 2.0)
-        }
-    }
-    
-    func showLoading() {
-        DispatchQueue.main.async {
-            HUD.show(.progress)
-        }
-    }
-    
-    func hideLoading() {
-        DispatchQueue.main.async {
-            HUD.hide()
-        }
-    }
     
 }
 

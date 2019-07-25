@@ -25,7 +25,7 @@ protocol ArticleListViewProtocol: class {
 protocol ArticleListWireFrameProtocol: class {
    // static func createArticleListModule() -> UIViewController
     // PRESENTER -> WIREFRAME
-    func presentArticleDetail(from view: ArticleListViewProtocol, article: Results)
+    func presentArticleDetail(from view: ArticleListViewProtocol, article: Article)
 }
 
 protocol ArticleListPresenterProtocol: class {
@@ -36,7 +36,7 @@ protocol ArticleListPresenterProtocol: class {
     // VIEW -> PRESENTER
     func loadArticleSections()
     func loadArticles(section : String, timePeriod : TimePeriod, offset: Int)
-    func moveToDetailView(_ article: Results)
+    func moveToDetailView(_ article: Article)
 }
 
 protocol ArticleListInteractorOutputProtocol: class {

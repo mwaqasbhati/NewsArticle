@@ -9,13 +9,13 @@
 import Foundation
 
 //The dispatcher is responsible to execute a Request and provide the response
-public protocol Dispatcher {
+protocol Dispatcher {
     
     //Configure the dispatcher with an environment
     init(environment: Environment)
     
     //This function executes the request and provide a response
-    func execute(request: Request, completion: @escaping (Any?) -> ()) throws
+    func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void)
 }
 
 public class NetworkFactory {
@@ -44,8 +44,17 @@ private extension NetworkFactory {
         }
         
         
-        func execute(request: Request, completion: @escaping (Any?) -> ()) throws {
-            let request = try self.prepare(request: request)
+        func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void) {
+            
+            guard Reachability.isConnectedToNetwork() else {
+                completion(Result.failure(.internetError))
+                return
+            }
+            
+            guard let request = self.prepare(request: request) else {
+                completion(Result.failure(.requestFailed))
+                return
+            }
             
             #if DEBUG
             print("Request URL: \(String(describing: request.url))")
@@ -54,15 +63,51 @@ private extension NetworkFactory {
             URLSession.shared.dataTask(with: request) { (data, response, error) in
               //  let response = Response.data(data!)
                 
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(Result.failure(.requestFailed))
+                    return
+                }
+                
+                Logger.log(message: "Response:  \(NSString(data: data ?? Data(), encoding:String.Encoding.utf8.rawValue)!)")
+                
+                if httpResponse.statusCode == 200 {
+                    if let data = data {
+                        do {
+                            let genericModel = try JSONDecoder().decode(T.self, from: data)
+                            completion(Result.success(genericModel))
+                        } catch {
+                            do {
+                                let errorModel = try JSONDecoder().decode(ResponseError.self, from: data)
+                                completion((Result.failure(.responseError(errorModel.message))))
+                            } catch {
+                                completion((Result.failure(.jsonParsingFailure)))
+                            }
+                        }
+                    } else {
+                        completion((Result.failure(.invalidData)))
+                    }
+                } else {
+                    if let data = data {
+                        do {
+                            let errorModel = try JSONDecoder().decode(ResponseError.self, from: data)
+                            completion((Result.failure(.responseError(errorModel.message))))
+                        } catch {
+                            completion((Result.failure(.jsonParsingFailure)))
+                        }
+                    } else {
+                        completion((Result.failure(.invalidData)))
+                    }
+                }
+                
                 #if DEBUG
                 print("Response: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
                 #endif
                 
-                completion(data!)
+                
                 }.resume()
         }
         
-        func prepare(request: Request) throws -> URLRequest {
+        func prepare(request: Request) -> URLRequest? {
             
             //1. format the endpoint url using host url and path
             let fullUrl = "\(request.path)"
@@ -77,7 +122,7 @@ private extension NetworkFactory {
                     let body = try? JSONEncoder().encode(params)
                     apiRequest.httpBody = body
                 } else {
-                    throw NetworkErrors.badInput
+                    return nil
                 }
                 
             case .url(let params):
@@ -86,12 +131,12 @@ private extension NetworkFactory {
                         return URLQueryItem(name: pair.key, value: pair.value)
                     }
                     guard var components = URLComponents(string: fullUrl) else {
-                        throw NetworkErrors.badInput
+                        return nil
                     }
                     components.queryItems = queryParams
                     apiRequest.url = components.url
                 } else {
-                    throw NetworkErrors.badInput
+                    return nil
                 }
             }
             
@@ -105,3 +150,6 @@ private extension NetworkFactory {
         }
     }
 }
+
+
+

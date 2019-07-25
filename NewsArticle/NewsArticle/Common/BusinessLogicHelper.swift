@@ -47,14 +47,14 @@ class BusinessLogicHelper {
      - parameter resultsArray: Array to search, must hold MostViewedResults types.
      - returns: Filtered array
      */
-    static func filterBySearchKeywords(searchKeyword: String, resultsArray : Array<Results>) -> Array<Results> {
+    static func filterBySearchKeywords(searchKeyword: String, resultsArray : Array<Article>) -> Array<Article> {
         
         if searchKeyword.count == 0 {
             return resultsArray
         }
     
         let filteredArray = resultsArray.filter({
-            (result : Results) -> Bool in
+            (result : Article) -> Bool in
             return (result.title?.localizedCaseInsensitiveContains(searchKeyword))!
         })
 
