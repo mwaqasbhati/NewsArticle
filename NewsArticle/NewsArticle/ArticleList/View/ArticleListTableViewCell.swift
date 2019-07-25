@@ -25,7 +25,9 @@ class ArticleListTableViewCell: UITableViewCell {
     func setArticle(_ article: Article) {
         labelTitle.text = article.title
         labelDescription.text = article.byline
-        labelDate.text = article.published_date
+        if let date = article.published_date {
+            labelDate.text = "🗓 \(date)"
+        }
         if  let media = article.media?.first, let metadata = media.mediaMetadata?.first?.url, let url = URL(string: metadata) {
             SDWebImageManager.shared.imageLoader.requestImage(with: url, options: .continueInBackground, context: nil, progress: nil, completed: { [weak self] (image:UIImage?, data:Data?, error:Error?, finished:Bool) in
                 
@@ -33,6 +35,8 @@ class ArticleListTableViewCell: UITableViewCell {
                 if image != nil {
                     weakSelf.imageviewThumbnail.image = image
                     weakSelf.imageviewThumbnail.contentMode = .scaleAspectFill
+                    weakSelf.imageviewThumbnail.layer.masksToBounds = true
+                    weakSelf.imageviewThumbnail.layer.cornerRadius = 37.5
                 } else {
                     weakSelf.imageviewThumbnail.image = UIImage(named: "placeholder")
                 }

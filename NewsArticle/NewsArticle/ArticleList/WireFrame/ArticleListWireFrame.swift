@@ -6,25 +6,24 @@
 
 import UIKit
 
-
 class ArticleListWireFrame: ArticleListWireFrameProtocol {
     
     static func createArticleListModule()->UIViewController? {
         if let rootViewController = mainStoryboard.instantiateViewController(withIdentifier: "ArticleListView") as? ArticleListView {
-        let presenter = ArticleListPresenter()
-        let interactor = ArticleListInteractor()
-        let wireFrame = ArticleListWireFrame()
-        let dataClient = ArticleListNetworkClient()
-        
-        dataClient.remoteRequestHandler = interactor
-        interactor.presenter = presenter
-        interactor.dataManager = dataClient
-        presenter.interactor = interactor
-        presenter.wireFrame = wireFrame
-        presenter.view = rootViewController
-        rootViewController.presenter = presenter
-        let navController = UINavigationController(rootViewController: rootViewController)
-        return navController
+            let presenter = ArticleListPresenter()
+            let interactor = ArticleListInteractor()
+            let wireFrame = ArticleListWireFrame()
+            let dataClient = ArticleListNetworkClient()
+            
+            dataClient.remoteRequestHandler = interactor
+            interactor.presenter = presenter
+            interactor.dataManager = dataClient
+            presenter.interactor = interactor
+            presenter.wireFrame = wireFrame
+            presenter.view = rootViewController
+            rootViewController.presenter = presenter
+            let navController = UINavigationController(rootViewController: rootViewController)
+            return navController
         }
         return nil
     }

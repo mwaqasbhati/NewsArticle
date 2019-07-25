@@ -43,6 +43,16 @@ private extension NetworkFactory {
             self.environment = environment
         }
         
+        /**
+         Execute a URLRequest via network API.
+         
+         
+         - parameter request: Request object of NSURLSession.
+         - parameter decode: Decodable Model for this particular API.
+         - parameter completion: Result object which will contain objects or error.
+
+         This method accepts a Request object containing (path, method, parameters), Decodable entity type and completion block which will be called when we will get data.
+         */
         
         func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void) {
             
@@ -61,7 +71,6 @@ private extension NetworkFactory {
             #endif
             
             URLSession.shared.dataTask(with: request) { (data, response, error) in
-              //  let response = Response.data(data!)
                 
                 guard let httpResponse = response as? HTTPURLResponse else {
                     completion(Result.failure(.requestFailed))
@@ -106,6 +115,15 @@ private extension NetworkFactory {
                 
                 }.resume()
         }
+        
+        /**
+         Gets a URLRequest object corresponding to given Request.
+         
+         
+         - parameter request: Request of Network API.
+         
+         This method accepts a Request object containing (path, method, parameters) and return an optional URLRequest object of NSURLSession
+         */
         
         func prepare(request: Request) -> URLRequest? {
             

@@ -15,11 +15,12 @@ import Foundation
  - Used in: path.
  - type: string.
  */
-enum TimePeriod : String {
+enum TimePeriod : String, CaseIterable {
     case Day = "1"
     case Week = "7"
     case Month = "30"
     
+    static let names = [Day, Week, Month]
     func getDisplayName() -> String {
         
         switch self {
@@ -47,7 +48,7 @@ class BusinessLogicHelper {
      - parameter resultsArray: Array to search, must hold MostViewedResults types.
      - returns: Filtered array
      */
-    static func filterBySearchKeywords(searchKeyword: String, resultsArray : Array<Article>) -> Array<Article> {
+    static func filterBySearchKeywords(searchKeyword: String, resultsArray : [Article]) -> [Article] {
         
         if searchKeyword.count == 0 {
             return resultsArray
