@@ -111,10 +111,12 @@ class NetworkDispatcher: Dispatcher {
     func prepare(request: Request) -> URLRequest? {
         
         //1. format the endpoint url using host url and path
-        let fullUrl = "\(request.path)"
-        
+        guard let encodedURL = request.path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), let url = URL(string: encodedURL)  else {
+            return nil
+        }
+
         //2. create an api request object with the url
-        var apiRequest = URLRequest(url: URL(string: fullUrl)!)
+        var apiRequest = URLRequest(url: url)
         
         //3. set api request parameters either as body or as query params
         switch request.parameters {
@@ -131,7 +133,7 @@ class NetworkDispatcher: Dispatcher {
                 let queryParams = params.map { pair  in
                     return URLQueryItem(name: pair.key, value: pair.value)
                 }
-                guard var components = URLComponents(string: fullUrl) else {
+                guard var components = URLComponents(string: encodedURL) else {
                     return nil
                 }
                 components.queryItems = queryParams

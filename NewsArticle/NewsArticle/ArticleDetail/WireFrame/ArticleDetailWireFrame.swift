@@ -7,14 +7,17 @@
 import UIKit
 
 
-class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
+class ArticleDetailWireFrame {
     
-    func goBack(from view: ArticleDetailViewProtocol) {
-        if let view = view as? UIViewController {
-            view.navigationController?.popViewController(animated: true)
-        }
-    }
-    static func createArticleDetailModule(_ article: Article)->UIViewController? {
+    /**
+     Setup Article detail Module.
+     
+     - parameter article: accepts article object.
+
+     This method creates article detail view all business elements like presenter, interactor, wireframe etc and return it if it is successfully initialized.
+     */
+    
+    static func createArticleDetailModule(_ article: Article) -> UIViewController? {
         if let articleDetail = Storyboard.ArticleDetail.controller as? ArticleDetailView {
         let presenter = ArticleDetailPresenter(article)
         let interactor = ArticleDetailInteractor()
@@ -33,15 +36,6 @@ class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
         }
         return nil
     }
-    func presentSignupScreen(from view: ArticleDetailViewProtocol) {
-
-    }
-    static var mainStoryboard: UIStoryboard {
-        return UIStoryboard(name: "Main", bundle: Bundle.main)
-    }
-    func presentHomeScreen(from view: ArticleDetailViewProtocol) {
-        
-
-    }
-    
 }
+
+extension ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {}

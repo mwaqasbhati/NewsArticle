@@ -21,16 +21,13 @@ enum TimePeriod : String, CaseIterable {
     case Month = "30"
     
     static let names = [Day, Week, Month]
-    func getDisplayName() -> String {
-        
+    
+    var name: String {
         switch self {
-            
         case .Day:
             return "Day"
-            
         case .Week:
             return "Week"
-            
         case .Month:
             return "Month"
         }

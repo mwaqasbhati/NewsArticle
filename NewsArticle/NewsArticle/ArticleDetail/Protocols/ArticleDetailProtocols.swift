@@ -15,7 +15,6 @@ protocol ArticleDetailViewProtocol: class {
 
 protocol ArticleDetailWireFrameProtocol: class {
     // PRESENTER -> WIREFRAME
-    func goBack(from view: ArticleDetailViewProtocol)
 }
 
 protocol ArticleDetailPresenterProtocol: class {
@@ -24,7 +23,6 @@ protocol ArticleDetailPresenterProtocol: class {
     var wireFrame: ArticleDetailWireFrameProtocol? { get set }
     var article: Article {get set}
     // VIEW -> PRESENTER
-    func goBack()
 }
 
 protocol ArticleDetailInteractorOutputProtocol: class {

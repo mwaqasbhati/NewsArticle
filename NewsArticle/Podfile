@@ -9,6 +9,7 @@ target 'NewsArticle' do
 
   pod 'PKHUD', '~> 5.0'
   pod 'SDWebImage'
+  pod 'Dropdowns'
   
   target 'NewsArticleTests' do
     inherit! :search_paths

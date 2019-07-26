@@ -10,19 +10,33 @@ import SDWebImage
 
 class ArticleDetailView: UIViewController {
     
+    // MARK: - Constants
+
+    enum Constants {
+        static let placeHolder = "placeholder"
+        static let error = "Error"
+        static let close = "Close"
+        static let alertMessage = "There was a problem when trying to open"
+    }
+    
+    // MARK: - IBOutlets
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var labelByLine: UILabel!
     @IBOutlet weak var labelPublishDate: UILabel!
     @IBOutlet weak var labelAbstract: UILabel!
     @IBOutlet weak var labelKeywords: UILabel!
-
     @IBOutlet weak var buttonMoreDetails: UIButton!
     @IBOutlet weak var imageViewPreview: UIImageView!
     
+    // MARK: - Instance Variables
+
     var presenter: ArticleDetailPresenterProtocol?
     private var article: Article?
     
+    // MARK: - View Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if let article = presenter?.article {
@@ -30,6 +44,18 @@ class ArticleDetailView: UIViewController {
             setData(article)
         }
     }
+    
+    // MARK: - Helper Methods
+
+    /**
+     Set Data will assign article to UI elements.
+     
+     
+     - parameter article: article data object from Network API.
+     
+     This method accepts article object which will be mapped to particular UI elements
+     */
+    
     private func setData(_ article: Article) {
         labelTitle.text = article.title
         labelSection.text = article.section
@@ -47,11 +73,13 @@ class ArticleDetailView: UIViewController {
                     weakSelf.imageViewPreview.image = image
                     weakSelf.imageViewPreview.contentMode = .scaleAspectFill
                 } else {
-                    weakSelf.imageViewPreview.image = UIImage(named: "placeholder")
+                    weakSelf.imageViewPreview.image = UIImage(named: Constants.placeHolder)
                 }
             })
         }
     }
+    
+    
     @IBAction func moreDetailButtonPressed(_ sender: Any) {
         
         if let urlStr = article?.url, let url = URL(string: urlStr) {
@@ -59,9 +87,9 @@ class ArticleDetailView: UIViewController {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             } else {
-                let alert = UIAlertController(title: "Error", message: "There was a problem when trying to open \(url)", preferredStyle: UIAlertController.Style.alert)
+                let alert = UIAlertController(title: Constants.error, message: "\(Constants.alertMessage) \(url)", preferredStyle: UIAlertController.Style.alert)
                 
-                alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: Constants.close, style: UIAlertAction.Style.cancel, handler: nil))
                 
                 present(alert, animated: true, completion: nil)
             }
@@ -71,8 +99,7 @@ class ArticleDetailView: UIViewController {
     
 }
 
-extension ArticleDetailView: ArticleDetailViewProtocol {
-    
-    
-}
+// MARK: - Presenter to View
+
+extension ArticleDetailView: ArticleDetailViewProtocol { }
 

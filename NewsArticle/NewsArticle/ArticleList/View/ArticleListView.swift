@@ -6,51 +6,53 @@
 
 import UIKit
 import PKHUD
+import Dropdowns
 
 class ArticleListView: UIViewController {
     
+    // MARK: - Constants
+
+    private enum Constants {
+        static let allSections = "all-sections"
+        static let cancel = "Cancel"
+        static let popularItemsTitle = "See most popular items for"
+        static let all = "All"
+    }
     // MARK: - IBOutlets
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var pickerView: UIPickerView!
 
     // MARK: - Instance Variables
     
     private let searchBar = UISearchBar()
     private let refreshControl = UIRefreshControl()
     private var articles = [Article]()
-    private var sections = [ArticleSectionResults]()
+    private var sections = [String]()
     private var filteredArticles = [Article]()
     private var currentOffset = 0
     private var searchMode = false
     private var totalResults = 0
     private var selectedSection: String?
-    private var defaultSection = "all-sections"
+    private var defaultSection = Constants.allSections
     private var defaultTimePeriod = TimePeriod.Week
     var presenter: ArticleListPresenterProtocol?
-    private var pickershowHide: Bool? {
-        didSet {
-            var bottomPadding = CGFloat(0.0)
-            if #available(iOS 11.0, *) {
-                bottomPadding = view.safeAreaInsets.bottom
-            }
-            if pickershowHide ?? false {
-                bottomConstraint.constant = bottomPadding
-            } else {
-                bottomConstraint.constant = -246 - bottomPadding
-            }
-        }
-    }
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        doLoadArticleSections()
+        fetchArticles()
+        fetchArticleSections()
         setup()
     }
     
     // MARK: - Helper Methods
+    
+    /**
+     setup will initialize basic UI elements.
+     
+     This method initializes basic UI elements
+     */
     
     private func setup() {
         // Configure Search Bar
@@ -66,55 +68,82 @@ class ArticleListView: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 150
     }
-    private func doLoadArticleSections() {
-        presenter?.loadArticleSections()
-        presenter?.loadArticles(section: defaultSection, timePeriod: defaultTimePeriod, offset: currentOffset)
-    }
-    @objc func refresh(sender:AnyObject) {
-        currentOffset = 0
-        articles.removeAll()
-        presenter?.loadArticles(section: "all-sections", timePeriod: defaultTimePeriod, offset: currentOffset)
+    
+    /**
+     It fetches article categories from Network API.
+     
+     
+     This method fetches all article categories like entertainment, music etc.
+     */
+    
+    private func fetchArticleSections() {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let `self` = self else { return }
+            self.presenter?.loadArticleSections()
+        }
     }
     
+    /**
+     It fetches article data from Network API..
+     
+     
+     This method fetches article based on section, time and offset.
+     */
+    
+    private func fetchArticles() {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let `self` = self else { return }
+            self.presenter?.loadArticles(section: self.defaultSection, timePeriod: self.defaultTimePeriod, offset: self.currentOffset)
+        }
+    }
+    
+    /**
+     It reset all article data filters and fetches all sections from Network API.
+     
+     
+     This method refreshed article data.
+     */
+    
+    @objc func refresh(sender:AnyObject) {
+         defaultSection = Constants.allSections
+         resetFiltersAndLoad()
+    }
+    
+    /**
+     It reset article offset to 0 and fetches articles.
+     
+    */
+    
+    private func resetFiltersAndLoad() {
+        currentOffset = 0
+        articles.removeAll()
+        presenter?.loadArticles(section: defaultSection, timePeriod: defaultTimePeriod, offset: currentOffset)
+    }
     private func showTimePeriodFilters() {
-        let alert = UIAlertController(title: "See most popular items for", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: Constants.popularItemsTitle, message: nil, preferredStyle: .actionSheet)
         for timePeriod in TimePeriod.names {
             let timePeriodAction = UIAlertAction(title: getDisplayNameForTimePeriod(timePeriod: timePeriod),
                                                  style: .default, handler: { action in
                                                     self.defaultTimePeriod = timePeriod
-                                                    self.doLoadArticleSections()
+                                                    self.fetchArticles()
             })
             alert.addAction(timePeriodAction)
         }
-        let cancelAction = UIAlertAction(title: "Cancel",
+        let cancelAction = UIAlertAction(title: Constants.cancel,
                                          style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
     
     private func getDisplayNameForTimePeriod(timePeriod: TimePeriod) -> String {
-        
-        var displayName = timePeriod.getDisplayName()
-        
+        var displayName = timePeriod.name
         if defaultTimePeriod == timePeriod {
             displayName = "✓ " + displayName
         }
-        
         return displayName
     }
     // MARK: - IBActions
 
-    @IBAction func doneButtonPressed(_ sender: Any) {
-        pickershowHide = false
-        if let section = selectedSection {
-            defaultSection = section
-            articles.removeAll()
-            doLoadArticleSections()
-        }
-    }
-    @IBAction func cancelButtonPressed(_ sender: Any) {
-        pickershowHide = false
-    }
     @IBAction func searchButtonPressed(_ sender: Any) {
         if searchMode {
             searchBarCancelButtonClicked(searchBar)
@@ -130,13 +159,6 @@ class ArticleListView: UIViewController {
     @IBAction func rightButtonPressed(_ sender: Any) {
         showTimePeriodFilters()
     }
-    @IBAction func leftButtonPressed(_ sender: Any) {
-        pickershowHide = true
-    }
-    
-    
-    
-    
 }
 
 // MARK: - ArticleListViewProtocol
@@ -144,10 +166,18 @@ class ArticleListView: UIViewController {
 extension ArticleListView: ArticleListViewProtocol {
     
     func showArticleSections(_ articles: ArticleSectionBase) {
-        sections = articles.results ?? [ArticleSectionResults]()
+        sections = [defaultSection]
+        sections.append(contentsOf: (articles.results ?? [ArticleSectionResults]()).map({ $0.name ?? "" }))
         DispatchQueue.main.async { [weak self] in
-            guard let `self` = self else { return }
-            self.pickerView.reloadAllComponents()
+            guard let `self` = self, let navC = self.navigationController else { return }
+            if let titleView = TitleView(navigationController: navC, title: Constants.all, items: self.sections) {
+                self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: titleView)
+                titleView.action = { [weak self] index in
+                    guard let `self` = self else { return }
+                    self.defaultSection = self.sections[index]
+                    self.resetFiltersAndLoad()
+                }
+            }
         }
     }
     func showArticles(_ articles: ArticleListBase) {
@@ -216,7 +246,7 @@ extension ArticleListView: UITableViewDelegate {
         let offsetNumber = indexPath.row + 1
         if (offsetNumber % 20 == 0 && offsetNumber > currentOffset && articles.count <= totalResults) {
             currentOffset = offsetNumber
-            doLoadArticleSections()
+            fetchArticles()
         }
     }
 }
@@ -237,28 +267,5 @@ extension ArticleListView: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-    }
-}
-
-//MARK:- PickerView Delegate & DataSource
-extension ArticleListView: UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return sections.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedSection = sections[row].name ?? ""
-    }
-}
-
-extension ArticleListView: UIPickerViewDelegate {
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if let sectionName = sections[row].name {
-            return sectionName
-        }
-        return nil
     }
 }

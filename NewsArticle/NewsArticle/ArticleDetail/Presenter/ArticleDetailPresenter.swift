@@ -5,10 +5,9 @@
 // Created by Muhammad Waqas Bhati//
 
 
-class ArticleDetailPresenter: ArticleDetailPresenterProtocol {
+class ArticleDetailPresenter {
     
     var article: Article
-    
     weak var view: ArticleDetailViewProtocol?
     var interactor: ArticleDetailInteractorInputProtocol?
     var wireFrame: ArticleDetailWireFrameProtocol?
@@ -16,18 +15,9 @@ class ArticleDetailPresenter: ArticleDetailPresenterProtocol {
     init(_ article: Article) {
         self.article = article
     }
-//    func showArticleDetail() {
-//        view?.showLoading()
-//        view?.showArticleDetail(article)
-//    }
-    func goBack() {
-        wireFrame?.goBack(from: view!)
-    }
 }
 
-extension ArticleDetailPresenter: ArticleDetailInteractorOutputProtocol {
-    
-    
-}
+extension ArticleDetailPresenter: ArticleDetailPresenterProtocol { }
+extension ArticleDetailPresenter: ArticleDetailInteractorOutputProtocol { }
 
 
