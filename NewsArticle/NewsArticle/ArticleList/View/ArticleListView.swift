@@ -29,7 +29,19 @@ class ArticleListView: UIViewController {
     private var defaultSection = "all-sections"
     private var defaultTimePeriod = TimePeriod.Week
     var presenter: ArticleListPresenterProtocol?
-
+    private var pickershowHide: Bool? {
+        didSet {
+            var bottomPadding = CGFloat(0.0)
+            if #available(iOS 11.0, *) {
+                bottomPadding = view.safeAreaInsets.bottom
+            }
+            if pickershowHide ?? false {
+                bottomConstraint.constant = bottomPadding
+            } else {
+                bottomConstraint.constant = -246 - bottomPadding
+            }
+        }
+    }
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -93,7 +105,7 @@ class ArticleListView: UIViewController {
     // MARK: - IBActions
 
     @IBAction func doneButtonPressed(_ sender: Any) {
-        bottomConstraint.constant = -246.0
+        pickershowHide = false
         if let section = selectedSection {
             defaultSection = section
             articles.removeAll()
@@ -101,7 +113,7 @@ class ArticleListView: UIViewController {
         }
     }
     @IBAction func cancelButtonPressed(_ sender: Any) {
-        bottomConstraint.constant = -246.0
+        pickershowHide = false
     }
     @IBAction func searchButtonPressed(_ sender: Any) {
         if searchMode {
@@ -119,7 +131,7 @@ class ArticleListView: UIViewController {
         showTimePeriodFilters()
     }
     @IBAction func leftButtonPressed(_ sender: Any) {
-        bottomConstraint.constant = 0.0
+        pickershowHide = true
     }
     
     

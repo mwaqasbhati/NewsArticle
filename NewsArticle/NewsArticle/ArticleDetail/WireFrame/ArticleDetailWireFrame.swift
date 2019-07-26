@@ -15,7 +15,7 @@ class ArticleDetailWireFrame: ArticleDetailWireFrameProtocol {
         }
     }
     static func createArticleDetailModule(_ article: Article)->UIViewController? {
-        if let articleDetail = mainStoryboard.instantiateViewController(withIdentifier: "ArticleDetailView") as? ArticleDetailView {
+        if let articleDetail = Storyboard.ArticleDetail.controller as? ArticleDetailView {
         let presenter = ArticleDetailPresenter(article)
         let interactor = ArticleDetailInteractor()
         let wireFrame = ArticleDetailWireFrame()

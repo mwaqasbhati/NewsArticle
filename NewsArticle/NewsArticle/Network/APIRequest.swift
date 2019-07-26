@@ -18,14 +18,14 @@ extension APIRequest: Request {
     public var path: String {
         switch self {
         case .articleSections:
-            return Configuration.apiPathSectionsList()
+            return Configuration.apiPathArticleSections()
         case .articles(let section,let timePeriod,let offset):
-            return Configuration.apiPathMostViewed(section: section, timePeriod: timePeriod, offset: offset)
+            return Configuration.apiPathArticles(section: section, timePeriod: timePeriod, offset: offset)
         }
     }
     
     public var parameters: RequestParams {
-        let key = Configuration.assignApiKey()
+        let key = Configuration.getApiKey()
         switch self {
         case .articleSections:
             return .url(["api-key": key])

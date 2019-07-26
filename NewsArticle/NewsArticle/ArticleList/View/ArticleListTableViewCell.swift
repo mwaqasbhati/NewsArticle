@@ -11,6 +11,7 @@ import SDWebImage
 
 class ArticleListTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var imageviewThumbnail: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelDescription: UILabel!
@@ -18,10 +19,24 @@ class ArticleListTableViewCell: UITableViewCell {
     
     static let cellId = "ArticleListCell"
     
+    // MARK: - Cell Lifecycle
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
+    
+    // MARK: - Helper Methods
+
+    /**
+     Set Article to a particlur UITableviewcell.
+     
+     
+     - parameter article: Article object which will be assigned to UI.
+     
+     This methods accepts article data object which will be assigner to UI elements e.g title, description.
+     */
+    
     func setArticle(_ article: Article) {
         labelTitle.text = article.title
         labelDescription.text = article.byline
@@ -43,10 +58,4 @@ class ArticleListTableViewCell: UITableViewCell {
             })
         }
     }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }

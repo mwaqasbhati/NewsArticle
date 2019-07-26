@@ -24,7 +24,7 @@ class Configuration {
      - parameter offset: Pagination offset for the request.
      - returns: Full URL string for Most Viewed with api key and offset params inclusive.
      */
-    public static func apiPathMostViewed(section : String, timePeriod: String, offset : Int) -> String {
+    public static func apiPathArticles(section : String, timePeriod: String, offset : Int) -> String {
         
         if section.count == 0 || timePeriod.count == 0 {
             assertionFailure("section and time period are needed.")
@@ -38,7 +38,7 @@ class Configuration {
      
      - returns: Full URL string for sections list with api key inclusive.
      */
-    public static func apiPathSectionsList() -> String {
+    public static func apiPathArticleSections() -> String {
         
         return scheme + host + basePath + "/viewed/sections.json"
     }
@@ -50,7 +50,7 @@ class Configuration {
      
      - returns: Full URL string for given path with api key inclusive.
      */
-    static  func assignApiKey() -> String {
+    static  func getApiKey() -> String {
         
         let base64data = Data(base64Encoded: apiKey)
         

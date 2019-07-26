@@ -27,9 +27,11 @@ class ArticleListTests: XCTestCase {
     }
     func testArticleListFetchingService() {
         promise = expectation(description: "Article Listing API Test")
-        let dataManager = ArticleListNetworkClient()
+        let dispatcher = NetworkDispatcher(configuration: URLSession(configuration: .default))
+        let dataManager = ArticleListNetworkClient(dispatcher)
         dataManager.remoteRequestHandler = self
-        dataManager.loadArticles(section: "all-sections", timePeriod: TimePeriod.Week, offset: 20)
+        let request = APIRequest.articles(section: "all-sections", timePeriod: TimePeriod.Week.rawValue, offset:20)
+        dataManager.loadArticles(request, section: "all-sections", timePeriod: TimePeriod.Week, offset: 20)
         waitForExpectations(timeout: 60.0) { (error) in
             XCTAssertNil(error, "Error")
         }
@@ -38,9 +40,11 @@ class ArticleListTests: XCTestCase {
     
     func testArticleSectionFetchingService() {
         promise = expectation(description: "Article Sections API Test")
-        let dataManager = ArticleListNetworkClient()
+        let dispatcher = NetworkDispatcher(configuration: URLSession(configuration: .default))
+        let dataManager = ArticleListNetworkClient(dispatcher)
         dataManager.remoteRequestHandler = self
-        dataManager.loadArticleSections()
+        let request = APIRequest.articleSections
+        dataManager.loadArticleSections(request)
         waitForExpectations(timeout: 60.0) { (error) in
             XCTAssertNil(error, "Error")
         }

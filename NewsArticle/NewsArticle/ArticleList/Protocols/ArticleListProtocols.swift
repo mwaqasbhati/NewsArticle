@@ -12,18 +12,13 @@ protocol ArticleListViewProtocol: class {
     
     // PRESENTER -> VIEW
     func showArticleSections(_ articles: ArticleSectionBase)
-
     func showArticles(_ articles: ArticleListBase)
-
     func showError(_ message: String)
-    
     func showLoading()
-    
     func hideLoading()
 }
 
 protocol ArticleListWireFrameProtocol: class {
-   // static func createArticleListModule() -> UIViewController
     // PRESENTER -> WIREFRAME
     func presentArticleDetail(from view: ArticleListViewProtocol, article: Article)
 }
@@ -59,8 +54,8 @@ protocol ArticleListDataManagerInputProtocol: class {
     var remoteRequestHandler: ArticleListDataManagerOutputProtocol? { get set }
     
     // INTERACTOR -> DATAMANAGER
-    func loadArticleSections()
-    func loadArticles(section : String, timePeriod : TimePeriod, offset: Int)
+    func loadArticleSections(_ request: Request)
+    func loadArticles(_ request: Request, section : String, timePeriod : TimePeriod, offset: Int)
 }
 
 protocol ArticleListDataManagerOutputProtocol: class {

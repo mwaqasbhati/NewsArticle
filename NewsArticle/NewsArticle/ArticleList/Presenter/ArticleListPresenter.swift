@@ -5,11 +5,14 @@
 // Created by Muhammad Waqas Bhati//
 
 
-class ArticleListPresenter: ArticleListPresenterProtocol {
+class ArticleListPresenter {
     weak var view: ArticleListViewProtocol?
     var interactor: ArticleListInteractorInputProtocol?
     var wireFrame: ArticleListWireFrameProtocol?
-    
+}
+
+// MARK: - Presenter to Interactor
+extension ArticleListPresenter: ArticleListPresenterProtocol {
     func loadArticleSections() {
         view?.showLoading()
         interactor?.loadArticleSections()
@@ -25,6 +28,7 @@ class ArticleListPresenter: ArticleListPresenterProtocol {
     }
 }
 
+// MARK: - Presenter to View
 extension ArticleListPresenter: ArticleListInteractorOutputProtocol {
     
     func didArticleSectionSuccess(_ sections: ArticleSectionBase) {

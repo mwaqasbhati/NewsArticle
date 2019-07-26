@@ -12,162 +12,140 @@ import Foundation
 protocol Dispatcher {
     
     //Configure the dispatcher with an environment
-    init(environment: Environment)
+    init(configuration: URLSession)
     
     //This function executes the request and provide a response
     func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void)
 }
 
-public class NetworkFactory {
+class NetworkDispatcher: Dispatcher {
     
-    private var environment: Environment
+    let session: URLSession
     
-    required public init(environment: Environment) {
-        self.environment = environment
+    required init(configuration: URLSession) {
+        self.session = configuration
     }
     
-    func makeNetworkProvider() -> Dispatcher {
-        return NetworkDispatcher(environment: environment)
-    }
-}
-
-private extension NetworkFactory {
+    /**
+     Execute a URLRequest via network API.
+     
+     
+     - parameter request: Request object of NSURLSession.
+     - parameter decode: Decodable Model for this particular API.
+     - parameter completion: Result object which will contain objects or error.
+     
+     This method accepts a Request object containing (path, method, parameters), Decodable entity type and completion block which will be called when we will get data.
+     */
     
-    class NetworkDispatcher: Dispatcher {
+    func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void) {
         
-        let session: URLSession
-        let environment: Environment
-        
-        required init(environment: Environment) {
-            self.session = URLSession(configuration: .default)
-            self.environment = environment
+        guard Reachability.isConnectedToNetwork() else {
+            completion(Result.failure(.internetError))
+            return
         }
         
-        /**
-         Execute a URLRequest via network API.
-         
-         
-         - parameter request: Request object of NSURLSession.
-         - parameter decode: Decodable Model for this particular API.
-         - parameter completion: Result object which will contain objects or error.
-
-         This method accepts a Request object containing (path, method, parameters), Decodable entity type and completion block which will be called when we will get data.
-         */
+        guard let request = self.prepare(request: request) else {
+            completion(Result.failure(.requestFailed))
+            return
+        }
         
-        func execute<T: Decodable>(request: Request, decode: T.Type?, completion: @escaping (Result<T, APIError>) -> Void) {
+        #if DEBUG
+        print("Request URL: \(String(describing: request.url))")
+        #endif
+        
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             
-            guard Reachability.isConnectedToNetwork() else {
-                completion(Result.failure(.internetError))
-                return
-            }
-            
-            guard let request = self.prepare(request: request) else {
+            guard let httpResponse = response as? HTTPURLResponse else {
                 completion(Result.failure(.requestFailed))
                 return
             }
             
-            #if DEBUG
-            print("Request URL: \(String(describing: request.url))")
-            #endif
+            Logger.log(message: "Response:  \(NSString(data: data ?? Data(), encoding:String.Encoding.utf8.rawValue)!)")
             
-            URLSession.shared.dataTask(with: request) { (data, response, error) in
-                
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    completion(Result.failure(.requestFailed))
-                    return
-                }
-                
-                Logger.log(message: "Response:  \(NSString(data: data ?? Data(), encoding:String.Encoding.utf8.rawValue)!)")
-                
-                if httpResponse.statusCode == 200 {
-                    if let data = data {
-                        do {
-                            let genericModel = try JSONDecoder().decode(T.self, from: data)
-                            completion(Result.success(genericModel))
-                        } catch {
-                            do {
-                                let errorModel = try JSONDecoder().decode(ResponseError.self, from: data)
-                                completion((Result.failure(.responseError(errorModel.message))))
-                            } catch {
-                                completion((Result.failure(.jsonParsingFailure)))
-                            }
-                        }
-                    } else {
-                        completion((Result.failure(.invalidData)))
-                    }
-                } else {
-                    if let data = data {
+            if httpResponse.statusCode == 200 {
+                if let data = data {
+                    do {
+                        let genericModel = try JSONDecoder().decode(T.self, from: data)
+                        completion(Result.success(genericModel))
+                    } catch {
                         do {
                             let errorModel = try JSONDecoder().decode(ResponseError.self, from: data)
                             completion((Result.failure(.responseError(errorModel.message))))
                         } catch {
                             completion((Result.failure(.jsonParsingFailure)))
                         }
-                    } else {
-                        completion((Result.failure(.invalidData)))
                     }
-                }
-                
-                #if DEBUG
-                print("Response: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
-                #endif
-                
-                
-                }.resume()
-        }
-        
-        /**
-         Gets a URLRequest object corresponding to given Request.
-         
-         
-         - parameter request: Request of Network API.
-         
-         This method accepts a Request object containing (path, method, parameters) and return an optional URLRequest object of NSURLSession
-         */
-        
-        func prepare(request: Request) -> URLRequest? {
-            
-            //1. format the endpoint url using host url and path
-            let fullUrl = "\(request.path)"
-            
-            //2. create an api request object with the url
-            var apiRequest = URLRequest(url: URL(string: fullUrl)!)
-            
-            //3. set api request parameters either as body or as query params
-            switch request.parameters {
-            case .body(let params):
-                if let params = params as? [String : String] {
-                    let body = try? JSONEncoder().encode(params)
-                    apiRequest.httpBody = body
                 } else {
-                    return nil
+                    completion((Result.failure(.invalidData)))
                 }
-                
-            case .url(let params):
-                if let params = params as? [String : String] {
-                    let queryParams = params.map { pair  in
-                        return URLQueryItem(name: pair.key, value: pair.value)
+            } else {
+                if let data = data {
+                    do {
+                        let errorModel = try JSONDecoder().decode(ResponseError.self, from: data)
+                        completion((Result.failure(.responseError(errorModel.message))))
+                    } catch {
+                        completion((Result.failure(.jsonParsingFailure)))
                     }
-                    guard var components = URLComponents(string: fullUrl) else {
-                        return nil
-                    }
-                    components.queryItems = queryParams
-                    apiRequest.url = components.url
                 } else {
-                    return nil
+                    completion((Result.failure(.invalidData)))
                 }
             }
             
-            //4. set api request header using common enviorment header parameters and specific request parameters
-            environment.headers.forEach { apiRequest.addValue($0.value as! String, forHTTPHeaderField: $0.key) }
-            request.headers?.forEach { apiRequest.addValue($0.value as! String, forHTTPHeaderField: $0.key) }
+            #if DEBUG
+            print("Response: \(String(describing: String(data: data ?? Data(), encoding: .utf8)))")
+            #endif
             
-            //5. set api request http method
-            apiRequest.httpMethod = request.method.rawValue
-            return apiRequest
+            
+            }.resume()
+    }
+    
+    /**
+     Gets a URLRequest object corresponding to given Request.
+     
+     
+     - parameter request: Request of Network API.
+     
+     This method accepts a Request object containing (path, method, parameters) and return an optional URLRequest object of NSURLSession
+     */
+    
+    func prepare(request: Request) -> URLRequest? {
+        
+        //1. format the endpoint url using host url and path
+        let fullUrl = "\(request.path)"
+        
+        //2. create an api request object with the url
+        var apiRequest = URLRequest(url: URL(string: fullUrl)!)
+        
+        //3. set api request parameters either as body or as query params
+        switch request.parameters {
+        case .body(let params):
+            if let params = params as? [String : String] {
+                let body = try? JSONEncoder().encode(params)
+                apiRequest.httpBody = body
+            } else {
+                return nil
+            }
+            
+        case .url(let params):
+            if let params = params as? [String : String] {
+                let queryParams = params.map { pair  in
+                    return URLQueryItem(name: pair.key, value: pair.value)
+                }
+                guard var components = URLComponents(string: fullUrl) else {
+                    return nil
+                }
+                components.queryItems = queryParams
+                apiRequest.url = components.url
+            } else {
+                return nil
+            }
         }
+        
+        //4. set api request header using common enviorment header parameters and specific request parameters
+        request.headers?.forEach { apiRequest.addValue($0.value as! String, forHTTPHeaderField: $0.key) }
+        
+        //5. set api request http method
+        apiRequest.httpMethod = request.method.rawValue
+        return apiRequest
     }
 }
-
-
-
