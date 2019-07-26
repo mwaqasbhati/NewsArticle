@@ -24,6 +24,9 @@ class ArticleListTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        imageviewThumbnail.layer.masksToBounds = true
+        imageviewThumbnail.layer.cornerRadius = 37.5
+        imageviewThumbnail.contentMode = .scaleAspectFill
     }
     
     // MARK: - Helper Methods
@@ -44,18 +47,7 @@ class ArticleListTableViewCell: UITableViewCell {
             labelDate.text = "🗓 \(date)"
         }
         if  let media = article.media?.first, let metadata = media.mediaMetadata?.first?.url, let url = URL(string: metadata) {
-            SDWebImageManager.shared.imageLoader.requestImage(with: url, options: .continueInBackground, context: nil, progress: nil, completed: { [weak self] (image:UIImage?, data:Data?, error:Error?, finished:Bool) in
-                
-                guard let weakSelf = self else { return }
-                if image != nil {
-                    weakSelf.imageviewThumbnail.image = image
-                    weakSelf.imageviewThumbnail.contentMode = .scaleAspectFill
-                    weakSelf.imageviewThumbnail.layer.masksToBounds = true
-                    weakSelf.imageviewThumbnail.layer.cornerRadius = 37.5
-                } else {
-                    weakSelf.imageviewThumbnail.image = UIImage(named: "placeholder")
-                }
-            })
+            imageviewThumbnail.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholder"), options: .transformAnimatedImage, progress: nil, completed: nil)
         }
     }
 }

@@ -172,7 +172,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="342" height="117.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="62v-dE-sWt">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="62v-dE-sWt">
                                                     <rect key="frame" x="15" y="21.5" width="75" height="75"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="75" id="Avq-V9-FWS"/>
@@ -203,11 +203,13 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="62v-dE-sWt" secondAttribute="bottom" constant="21" id="3ZQ-Xg-92Z"/>
                                                 <constraint firstItem="Nb7-M4-rl5" firstAttribute="top" secondItem="rah-E8-F8v" secondAttribute="bottom" constant="8" id="BBd-1b-4FD"/>
                                                 <constraint firstItem="62v-dE-sWt" firstAttribute="centerY" secondItem="E4B-sX-Q4o" secondAttribute="centerY" id="GeF-K1-odB"/>
                                                 <constraint firstItem="d6h-dt-b25" firstAttribute="leading" secondItem="62v-dE-sWt" secondAttribute="trailing" constant="12" id="MI8-oi-T1C"/>
-                                                <constraint firstItem="Nb7-M4-rl5" firstAttribute="leading" secondItem="E4B-sX-Q4o" secondAttribute="leadingMargin" constant="87" id="Pzy-Tt-KEU"/>
                                                 <constraint firstItem="62v-dE-sWt" firstAttribute="leading" secondItem="E4B-sX-Q4o" secondAttribute="leadingMargin" id="RPG-I1-DOw"/>
+                                                <constraint firstItem="62v-dE-sWt" firstAttribute="top" relation="greaterThanOrEqual" secondItem="E4B-sX-Q4o" secondAttribute="top" constant="21.5" id="UfO-CE-9D0"/>
+                                                <constraint firstItem="Nb7-M4-rl5" firstAttribute="leading" secondItem="d6h-dt-b25" secondAttribute="leading" id="VEM-zc-62c"/>
                                                 <constraint firstItem="rah-E8-F8v" firstAttribute="top" secondItem="d6h-dt-b25" secondAttribute="bottom" constant="4" id="Vku-XW-lP7"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="Nb7-M4-rl5" secondAttribute="bottom" constant="8" id="bcq-r3-w1h"/>
                                                 <constraint firstItem="rah-E8-F8v" firstAttribute="top" secondItem="d6h-dt-b25" secondAttribute="bottom" constant="4" id="cPc-UO-T7c"/>
@@ -244,11 +246,13 @@
                     <navigationItem key="navigationItem" title="Most Popular" id="O28-Yx-fkU">
                         <rightBarButtonItems>
                             <barButtonItem image="Vertical_dots" id="MR1-39-HYH">
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <action selector="rightButtonPressed:" destination="4hA-4Q-xcJ" id="HCU-u3-k7Y"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="search" id="m5m-g1-aCZ">
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <action selector="searchButtonPressed:" destination="4hA-4Q-xcJ" id="j10-pQ-IWI"/>
                                 </connections>
@@ -268,5 +272,6 @@
     </scenes>
     <resources>
         <image name="Vertical_dots" width="15" height="48"/>
+        <image name="placeholder" width="800" height="600"/>
     </resources>
 </document>

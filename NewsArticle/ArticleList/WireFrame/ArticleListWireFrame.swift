@@ -30,6 +30,7 @@ class ArticleListWireFrame: ArticleListWireFrameProtocol {
             presenter.view = rootViewController
             rootViewController.presenter = presenter
             let navController = UINavigationController(rootViewController: rootViewController)
+            navController.navigationBar.tintColor = UIColor.black
             return navController
         }
         return nil
